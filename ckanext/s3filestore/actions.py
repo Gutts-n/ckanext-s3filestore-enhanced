@@ -17,10 +17,13 @@ def get_signed_url(context: Context, data_dict: DataDict) -> AuthResult:
         raise NotAuthorized(_('You must be logged in to upload files'))
     
     package_id = data_dict.get("package_id", None)
+    resource_id = data_dict.get("resource_id", None)
     filename = data_dict.get("filename", None)
 
     if package_id is None:
         raise ValidationError({"package_id": _("Package ID is required")})
+    if resource_id is None:
+        raise ValidationError({"resource_id": _("Resource ID is required")})
     if filename is None:
         raise ValidationError({"filename": _("Filename is required")})
 
@@ -40,7 +43,6 @@ def get_signed_url(context: Context, data_dict: DataDict) -> AuthResult:
         raise ValidationError({"filename": _("Invalid filename")})
 
     url_type = 'upload'
-    resource_id = make_uuid()
 
     try:
         upload = uploader.get_resource_uploader({
