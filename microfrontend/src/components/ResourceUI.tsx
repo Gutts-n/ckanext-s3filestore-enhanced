@@ -230,7 +230,7 @@ export default function MultipartFileUploader({
         }
       }
 
-      replaceURLInput(result.successful[0].meta.name);
+      replaceURLInput(result.successful[0].name);
 
       const nameField = document.getElementById(
         "field-name"
