@@ -313,7 +313,8 @@ class CreateView(MethodView):
                     resource_found = True
                 except:
                     pass
-
+                log.info('TESTING 123')
+                log.info(data)
             if resource_id and resource_found:
                 get_action(u'resource_update')(context, data)
             else:

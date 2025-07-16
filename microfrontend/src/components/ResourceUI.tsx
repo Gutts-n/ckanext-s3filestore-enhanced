@@ -47,7 +47,7 @@ export async function getUploadParameters(
       },
       body: JSON.stringify({
         package_id: package_id,
-        filename: file.name,
+        filename: file.name.replaceAll(" ", "").toLowerCase(),
         contentType: file.type,
         resource_id: resourceId,
       }),
@@ -282,10 +282,11 @@ export default function MultipartFileUploader({
       }
     }
 
-    replaceURLInput(file?.meta.name);
+    replaceURLInput(file?.name);
   });
 
   const replaceURLInput = (filename?: string) => {
+    filename = filename?.replaceAll(" ", "").toLowerCase();
     const urlInput = document.getElementById(
       "field-resource-url"
     ) as HTMLInputElement | null;
