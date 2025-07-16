@@ -230,7 +230,7 @@ export default function MultipartFileUploader({
         }
       }
 
-      replaceURLInput(result.successful[0].name);
+      replaceURLInput(result.successful[0].meta.name);
 
       const nameField = document.getElementById(
         "field-name"
@@ -282,7 +282,7 @@ export default function MultipartFileUploader({
       }
     }
 
-    replaceURLInput(file?.name);
+    replaceURLInput(file?.meta.name);
   });
 
   const replaceURLInput = (filename?: string) => {
@@ -294,7 +294,7 @@ export default function MultipartFileUploader({
       const newUrl = `${window.location.origin}/dataset/${
         config.datasetId
       }/resource/${config.resourceId ? config.resourceId : "REPLACE_HERE"}/${
-        filename ? encodeURI(filename) : ""
+        filename ? filename : ""
       }`;
 
       urlInput.value = newUrl;
