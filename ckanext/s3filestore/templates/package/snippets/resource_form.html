@@ -1,6 +1,6 @@
 {% ckan_extends %}
 
-{% set is_upload=is_upload %}
+{% set is_upload = (data.url_type == 'upload') %}
 {% macro remove_button(js='') %}
   <button type="button" class="btn btn-danger btn-remove-url"
     onclick="
@@ -13,7 +13,6 @@
                 ...(document.getElementsByName('files[]')),
                 document.getElementsByName('files'),
               ]) {
-                console.log(input)
                 input.disabled = false;
             }
             clearInterval(interval);  
@@ -47,8 +46,7 @@
           <button type="button" class="btn btn-default" id="resource-upload-button"
             title="{{ _('Upload a file on your computer') }}"
             onclick="
-                            for (let x of document.querySelectorAll('.btn.btn-danger.btn-remove-url')){x.style.position = 'initial';}
-
+              for (let x of document.querySelectorAll('.btn.btn-danger.btn-remove-url')){x.style.position = 'initial';}
               document.getElementById('resource-url-upload').checked = true;
               document.getElementById('field-resource-upload').click();
             "autofocus="true"><i class="fa fa-cloud-upload"></i>{{ _("Upload") }}</button>
@@ -72,42 +70,39 @@
         {% block upload_controls %}
           {% if is_upload %}
             {# for existing uploads we show the file name in a readonly input box #}
-            
-            <input type="checkbox" id="field-clear-upload" value="true">
-            <div class="upload-type upload-section" style="
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-">
-              <button type="button" class="btn btn-danger btn-remove-url"
-                onclick="
-                  document.getElementById('field-clear-upload').checked = true;
-                  document.getElementById('field-resource-upload').focus();
-                  if (window.location.toString().includes('/edit')) {
-                    const interval = setInterval(() => {
-                      for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
-                        for (let input of [
-                        ...(document.getElementsByName('files[]')),
-                        document.getElementsByName('files'),
-                      ]) {
-                        input.disabled = false;
-                      }
-                  
-                      clearInterval(interval);
-                      }
-                    }, 600)
-                }
-                  this.style.position = 'initial';
-                ">{{ _('Clear Upload') }}</button>
-              <label class="form-label">{{ upload_label or _('File') }}</label>
-              <div class="controls">
-                {% set existing_name = data.get('url', '').split('/')[-1].split('?')[0].split('#')[0] %}
-                <input value="{{ existing_name }}" class="form-control" readonly>
+            <div id="upload-section-inputs-and-validators">
+              <input type="checkbox" id="field-clear-upload" value="true">
+              <div class="upload-type upload-section">
+                <button id="clear-upload-button" type="button" class="btn btn-danger btn-remove-url"
+                  onclick="
+                    document.getElementById('resource-url-none').checked = true;
+                    document.getElementById('{{ first_button }}').focus();
+                    if (window.location.toString().includes('/edit')) {
+                      const interval = setInterval(() => {
+                        for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
+                          for (let input of [
+                              ...(document.getElementsByName('files[]')),
+                              document.getElementsByName('files'),
+                            ]) {
+                              input.disabled = false;
+                          }
+                          clearInterval(interval);  
+                        }
+                      }, 600)
+                    }
+                    document.querySelector('#upload-section-inputs-and-validators').remove()
+                    document.querySelector('#uppy-section').style.display = 'flex';
+                  ">{{ _('Clear Upload') }}</button>
+                <label class="form-label">{{ upload_label or _('File') }}</label>
+                <div class="controls">
+                  {% set existing_name = data.get('url', '').split('/')[-1].split('?')[0].split('#')[0] %}
+                  <input value="{{ existing_name }}" class="form-control" readonly>
+                </div>
               </div>
             </div>
           {% endif %}
-          <div class="upload-type upload-section" style="
-    display: flex;
+          <div id="uppy-section" class="upload-type upload-section" style="
+    display: {{ 'none' if is_upload else 'flex' }};
     flex-direction: column;
     gap: 20px;
 ">
@@ -145,4 +140,26 @@
   {% endblock %}
 </div>
 {% asset 's3filestore/microfrontend-js' %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("field-resource-url");
+    if (input) {
+      input.addEventListener("click", function () {
+          const interval = setInterval(() => {
+
+          for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
+            for (let input of [
+                ...(document.getElementsByName('files[]')),
+                document.getElementsByName('files'),
+              ]) {
+                input.disabled = true;
+            }
+            clearInterval(interval);  
+          }
+        }, 600)
+      });
+    }
+  });
+</script>
 {% endblock %}

@@ -79,6 +79,9 @@ export default function MultipartFileUploader({
   const [hideUploader, setHideUploader] = useState(false);
   useEffect(() => {
     document
+      .getElementById("clear-upload-button")
+      ?.addEventListener("click", () => setHideUploader(true));
+    document
       .getElementById("resource-link-button")
       ?.addEventListener("click", () => setHideUploader(true));
     document
@@ -94,6 +97,7 @@ export default function MultipartFileUploader({
       }
     }
   }, []);
+
   const uppy = React.useMemo(() => {
     const uppy = new Uppy({
       restrictions: {
@@ -205,19 +209,36 @@ export default function MultipartFileUploader({
   }, []);
 
   uppy.on("complete", (result) => {
-    (
-      (document.getElementById("resource-url-upload") as any) ?? {
-        checked: false,
-      }
-    ).checked = true;
+    if (result.successful.length > 0) {
+      const uploadRadio = document.getElementById(
+        "resource-url-upload"
+      ) as HTMLInputElement;
+      if (uploadRadio) {
+        uploadRadio.checked = true;
 
-    replaceURLInput(result.successful[0].name);
-    (
-      (document.getElementById("field-name") as HTMLInputElement) ?? {
-        value: "",
+        uploadRadio.dispatchEvent(new Event("change", { bubbles: true }));
       }
-    ).value = result.successful[0]?.name;
-    onUploadSuccess(result);
+
+      if (window.location.toString().includes("/edit")) {
+        const clearUploadCheckbox = document.getElementById(
+          "field-clear-upload"
+        ) as HTMLInputElement;
+        if (clearUploadCheckbox) {
+          clearUploadCheckbox.checked = false;
+        }
+      }
+
+      replaceURLInput(result.successful[0].name);
+
+      const nameField = document.getElementById(
+        "field-name"
+      ) as HTMLInputElement;
+      if (nameField) {
+        nameField.value = result.successful[0]?.name || "";
+      }
+
+      onUploadSuccess(result);
+    }
   });
 
   uppy.on("upload-success", (file, response) => {
@@ -227,6 +248,38 @@ export default function MultipartFileUploader({
       response: response,
       isPaused: false,
     });
+
+    if (window.location.toString().includes("/edit")) {
+      const clearUploadCheckbox = document.getElementById(
+        "field-clear-upload"
+      ) as HTMLInputElement;
+      if (clearUploadCheckbox) {
+        clearUploadCheckbox.checked = false;
+      }
+
+      const uploadRadio = document.getElementById(
+        "resource-url-upload"
+      ) as HTMLInputElement;
+      if (uploadRadio) {
+        uploadRadio.checked = true;
+        uploadRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      const urlTypeNone = document.getElementById(
+        "resource-url-none"
+      ) as HTMLInputElement;
+      if (urlTypeNone) {
+        urlTypeNone.checked = false;
+      }
+
+      const linkRadio = document.getElementById(
+        "resource-url-link"
+      ) as HTMLInputElement;
+      if (linkRadio) {
+        linkRadio.checked = false;
+      }
+    }
+
     replaceURLInput(file?.name);
   });
 
@@ -234,14 +287,26 @@ export default function MultipartFileUploader({
     const urlInput = document.getElementById(
       "field-resource-url"
     ) as HTMLInputElement | null;
-    urlInput?.setAttribute(
-      "value",
-      `${window.location.origin}/dataset/${config.datasetId}/resource/${
-        config.resourceId ? config.resourceId : "REPLACE_HERE"
-      }/${filename ? filename : ""}`
-    );
-  };
 
+    if (urlInput) {
+      const newUrl = `${window.location.origin}/dataset/${
+        config.datasetId
+      }/resource/${config.resourceId ? config.resourceId : "REPLACE_HERE"}/${
+        filename ? encodeURI(filename) : ""
+      }`;
+
+      urlInput.value = newUrl;
+      urlInput.setAttribute("value", newUrl);
+
+      urlInput.dispatchEvent(new Event("change", { bubbles: true }));
+      urlInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+      if (window.location.toString().includes("/edit")) {
+        urlInput.focus();
+        urlInput.blur();
+      }
+    }
+  };
   return (
     <>
       {!hideUploader ? (
