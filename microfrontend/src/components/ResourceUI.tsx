@@ -96,6 +96,7 @@ export default function MultipartFileUploader({
         input.disabled = true;
       }
     }
+    console.log('Microfrontend started')
   }, []);
 
   const uppy = React.useMemo(() => {
