@@ -79,12 +79,6 @@ export default function MultipartFileUploader({
   const [hideUploader, setHideUploader] = useState(false);
   useEffect(() => {
     document
-      .getElementById("clear-upload-button")
-      ?.addEventListener("click", () => setHideUploader(true));
-    document
-      .getElementById("resource-link-button")
-      ?.addEventListener("click", () => setHideUploader(true));
-    document
       .getElementsByName("id")[0]
       ?.setAttribute("value", config.resourceId);
 
@@ -95,8 +89,15 @@ export default function MultipartFileUploader({
       ]) {
         input.disabled = true;
       }
+    } else {
+      document
+        .getElementById("clear-upload-button")
+        ?.addEventListener("click", () => setHideUploader(true));
+      document
+        .getElementById("resource-link-button")
+        ?.addEventListener("click", () => setHideUploader(true));
     }
-    console.log('Microfrontend started')
+    console.log("Microfrontend started");
   }, []);
 
   const uppy = React.useMemo(() => {
