@@ -24,7 +24,6 @@ if (ResourceEl) {
 
     const handleUploadDone: any = (response: UploadResult) => {
       let url = response.successful[0]?.response?.uploadURL as string;
-      console.log("RESPONSE", response.successful[0]);
       const urlParts = url.split("/");
       const resourceId = urlParts[urlParts.length - 2];
       const fileName = urlParts[urlParts.length - 1];

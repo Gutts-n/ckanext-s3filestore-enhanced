@@ -9,12 +9,6 @@ from ckan.logic import ValidationError, NotAuthorized, NotFound
 
 log = logging.getLogger(__name__)
 
-@toolkit.chained_action
-def resource_update(up_func, context: Context, data_dict: DataDict):
-    log.info('UPDATED DATASET:')
-    log.info(data_dict)
-    return up_func(context, data_dict)
-
 def get_signed_url(context: Context, data_dict: DataDict) -> AuthResult:
     """Generate a signed URL for single file upload"""
 

@@ -313,8 +313,6 @@ class CreateView(MethodView):
                     resource_found = True
                 except:
                     pass
-                log.info('TESTING 123')
-                log.info(data)
             if resource_id and resource_found:
                 get_action(u'resource_update')(context, data)
             else:
@@ -330,7 +328,6 @@ class CreateView(MethodView):
         except NotAuthorized:
             return base.abort(403, _(u'Unauthorized to create a resource'))
         except NotFound:
-            log.info('BROKE HERE')
             return base.abort(
                 404, _(u'The resource {id} could not be found.').format(id=resource_id)
             )

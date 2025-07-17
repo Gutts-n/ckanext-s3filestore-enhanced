@@ -82,23 +82,30 @@ export default function MultipartFileUploader({
       .getElementsByName("id")[0]
       ?.setAttribute("value", config.resourceId);
 
-    if (window.location.toString().includes("/edit")) {
-      for (let input of [
-        ...(document.getElementsByName("files[]") as any),
-        document.getElementsByName("files"),
-      ]) {
-        input.disabled = true;
-      }
-    } else {
-      document
-        .getElementById("clear-upload-button")
-        ?.addEventListener("click", () => setHideUploader(true));
-      document
-        .getElementById("resource-link-button")
-        ?.addEventListener("click", () => setHideUploader(true));
+    // We have to disable the files inputs from the uppy for users that click on save without adding links or files
+    // CKAN throws an error because uppy will send an empty binary on the form
+    for (let input of [
+      ...(document.getElementsByName("files[]") as any),
+      document.getElementsByName("files"),
+    ]) {
+      input.disabled = true;
     }
-    console.log("Microfrontend started");
-  }, []);
+
+    // on user clicks on the upload button
+    document
+      .getElementById("resource-upload-button")
+      ?.addEventListener("click", () => setHideUploader(false));
+
+    // on user clicks on the clear upload button
+    document
+      .getElementById("clear-upload-button")
+      ?.addEventListener("click", () => setHideUploader(true));
+
+    // on user clicks on the add URL button
+    document
+      .getElementById("resource-link-button")
+      ?.addEventListener("click", () => setHideUploader(true));
+  }, [config]);
 
   const uppy = React.useMemo(() => {
     const uppy = new Uppy({
@@ -165,6 +172,7 @@ export default function MultipartFileUploader({
     );
 
     uppy.on("file-added", (file) => {
+      disableSaveButton();
       const fileCount = Object.keys(uppy.getState().files).length;
       if (fileCount > 1) {
         uppy.removeFile(file.id);
@@ -177,6 +185,7 @@ export default function MultipartFileUploader({
     });
 
     uppy.on("file-removed", (file) => {
+      enableSaveButton();
       (
         (document.getElementById("resource-url-link") as any) ?? {
           checked: false,
@@ -210,7 +219,22 @@ export default function MultipartFileUploader({
     return uppy;
   }, []);
 
+  const disableSaveButton = () => {
+    for (let e of document.getElementsByName("save") as unknown as HTMLButtonElement[]) {
+      e.disabled = true;
+      e.setAttribute('disabled', '');
+    }
+  };
+
+  const enableSaveButton = () => {
+    for (let e of document.getElementsByName("save") as unknown as HTMLButtonElement[]) {
+      e.disabled = false;
+      e.removeAttribute('disabled');
+    }
+  };
+
   uppy.on("complete", (result) => {
+    enableSaveButton();
     if (result.successful.length > 0) {
       const uploadRadio = document.getElementById(
         "resource-url-upload"
@@ -244,6 +268,7 @@ export default function MultipartFileUploader({
   });
 
   uppy.on("upload-success", (file, response) => {
+    enableSaveButton();
     uppy.setFileState(file!.id, {
       progress: uppy.getState().files[file!.id].progress,
       uploadURL: response.body.Location,

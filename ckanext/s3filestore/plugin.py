@@ -9,7 +9,6 @@ from ckanext.s3filestore.actions import (
     prepare_upload_parts,
     complete_multipart_upload,
     list_parts,
-    resource_update,
     abort_multipart_upload,
     sign_part,
 )
@@ -125,7 +124,6 @@ class S3FileStorePlugin(plugins.SingletonPlugin):
             'create-multipart-upload': create_multipart_upload,
             'prepare-upload-parts': prepare_upload_parts,
             'complete-multipart-upload': complete_multipart_upload,
-            'resource_update': resource_update,
             'list-parts': list_parts,
             'abort-multipart-upload': abort_multipart_upload,
             'sign-part': sign_part,

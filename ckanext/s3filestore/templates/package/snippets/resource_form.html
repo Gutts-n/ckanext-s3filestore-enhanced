@@ -6,19 +6,17 @@
     onclick="
       document.getElementById('resource-url-none').checked = true;
       document.getElementById('{{ first_button }}').focus();
-      if (window.location.toString().includes('/edit')) {
-        const interval = setInterval(() => {
-          for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
-            for (let input of [
-                ...(document.getElementsByName('files[]')),
-                document.getElementsByName('files'),
-              ]) {
-                input.disabled = false;
-            }
-            clearInterval(interval);  
+      const interval = setInterval(() => {
+        for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
+          for (let input of [
+              ...(document.getElementsByName('files[]')),
+              document.getElementsByName('files'),
+            ]) {
+              input.disabled = true;
           }
-        }, 600)
-      }
+          clearInterval(interval);  
+        }
+      }, 600)
       this.style.position = 'initial';
       {{ js }}
     ">{{ _('Remove') }}</button>
@@ -46,6 +44,17 @@
           <button type="button" class="btn btn-default" id="resource-upload-button"
             title="{{ _('Upload a file on your computer') }}"
             onclick="
+              const interval = setInterval(() => {
+                for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
+                  for (let input of [
+                      ...(document.getElementsByName('files[]')),
+                      document.getElementsByName('files'),
+                    ]) {
+                      input.disabled = false;
+                  }
+                  clearInterval(interval);  
+                }
+              }, 600)
               for (let x of document.querySelectorAll('.btn.btn-danger.btn-remove-url')){x.style.position = 'initial';}
               document.getElementById('resource-url-upload').checked = true;
               document.getElementById('field-resource-upload').click();
@@ -77,19 +86,19 @@
                   onclick="
                     document.getElementById('resource-url-none').checked = true;
                     document.getElementById('{{ first_button }}').focus();
-                    if (window.location.toString().includes('/edit')) {
-                      const interval = setInterval(() => {
-                        for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
-                          for (let input of [
-                              ...(document.getElementsByName('files[]')),
-                              document.getElementsByName('files'),
-                            ]) {
-                              input.disabled = false;
-                          }
-                          clearInterval(interval);  
+
+                    const interval = setInterval(() => {
+                      for (let x of document.querySelectorAll('.uppy-u-reset.uppy-c-btn.uppy-Dashboard-browse')) {
+                        for (let input of [
+                            ...(document.getElementsByName('files[]')),
+                            document.getElementsByName('files'),
+                          ]) {
+                            input.disabled = true;
                         }
-                      }, 600)
-                    }
+                        clearInterval(interval);  
+                      }
+                    }, 600)
+
                     document.querySelector('#upload-section-inputs-and-validators').remove()
                     document.querySelector('#uppy-section').style.display = 'flex';
                   ">{{ _('Clear Upload') }}</button>
